@@ -4,7 +4,7 @@
 
 - **Built for Unreal Engine** - Native integration with UE5 games
 - **QA-first workflow** - Video evidence eliminates "works on my machine" disputes
-- **Powered by [RVR](https://unrealsolutions.ltd/products/runtime-video-recorder)** - In-engine capture creates forensic-grade repro bundles automatically
+- **Powered by [RVR](https://unrealsolutions.com)** - In-engine capture creates repro bundles automatically. Works for any game
 
 ## Features
 
