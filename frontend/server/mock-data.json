@@ -1,0 +1,82 @@
+{
+  "repros": [
+    {
+      "id": "repro-001",
+      "title": "Player falls through floor on stairs",
+      "description": "Player character falls through the floor geometry when jumping on the stairs in the city center map. This happens consistently when approaching from the east side.",
+      "thumbnailUrl": "/placeholder.svg",
+      "videoUrl": "/sample-video.mp4",
+      "build": "2.4.1-rc2",
+      "platform": "Win64",
+      "map": "L_CityCenter",
+      "createdAt": "2026-01-21T14:32:00Z",
+      "durationMs": 47000,
+      "tags": ["physics", "collision", "player-movement"],
+      "reporter": "jsmith",
+      "systemInfo": {
+        "os": "Windows",
+        "osVersion": "11 23H2",
+        "cpu": "Intel Core i9-13900K",
+        "gpu": "NVIDIA GeForce RTX 4080",
+        "ramGB": 32,
+        "gpuDriverVersion": "546.33"
+      },
+      "bundleVersion": "1.2.0",
+      "bundleHash": "a1b2c3d4e5f6789012345678901234567890abcd"
+    },
+    {
+      "id": "repro-002",
+      "title": "Animation stuck in T-pose during cutscene",
+      "description": "Character model gets stuck in T-pose when the cutscene starts. Audio plays normally but character doesn't animate.",
+      "thumbnailUrl": "/placeholder.svg",
+      "videoUrl": "/sample-video.mp4",
+      "build": "2.4.1-rc2",
+      "platform": "PS5",
+      "map": "L_Tutorial",
+      "createdAt": "2026-01-21T13:15:00Z",
+      "durationMs": 83000,
+      "tags": ["animation", "cutscene"],
+      "reporter": "agarcia",
+      "systemInfo": {
+        "os": "Orbis",
+        "osVersion": "PS5 System Software 23.02",
+        "cpu": "AMD Zen 2",
+        "gpu": "AMD RDNA 2",
+        "ramGB": 16,
+        "gpuDriverVersion": "N/A"
+      },
+      "bundleVersion": "1.2.0",
+      "bundleHash": "b2c3d4e5f67890123456789012345678901234bc"
+    },
+    {
+      "id": "repro-003",
+      "title": "Massive FPS drop when entering boss arena",
+      "description": "Frame rate drops from 60fps to under 20fps when the boss spawns and particles start.",
+      "thumbnailUrl": "/placeholder.svg",
+      "videoUrl": "/sample-video.mp4",
+      "build": "2.4.0",
+      "platform": "Win64",
+      "map": "L_BossArena",
+      "createdAt": "2026-01-20T16:45:00Z",
+      "durationMs": 120000,
+      "tags": ["performance", "particles", "boss"],
+      "reporter": "mchen",
+      "systemInfo": {
+        "os": "Windows",
+        "osVersion": "10 22H2",
+        "cpu": "AMD Ryzen 7 5800X",
+        "gpu": "NVIDIA GeForce RTX 3070",
+        "ramGB": 32,
+        "gpuDriverVersion": "545.84"
+      },
+      "bundleVersion": "1.2.0",
+      "bundleHash": "c3d4e5f678901234567890123456789012345cde"
+    }
+  ],
+  "filters": {
+    "builds": ["2.4.1-rc2", "2.4.1-rc1", "2.4.0", "2.3.5"],
+    "platforms": ["Win64", "Linux", "Mac", "PS5", "XSX", "Switch", "iOS", "Android"],
+    "maps": ["L_CityCenter", "L_Tutorial", "L_BossArena", "L_Forest", "L_Desert"],
+    "tags": ["physics", "collision", "animation", "performance", "particles", "player-movement", "cutscene", "boss", "audio"]
+  }
+}

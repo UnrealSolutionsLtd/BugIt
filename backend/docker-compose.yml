@@ -1,0 +1,28 @@
+# BugIt Docker Compose
+# For local development and simple deployments
+
+version: "3.8"
+
+services:
+  bugit:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+    ports:
+      - "8080:8080"
+    volumes:
+      - bugit-data:/app/data
+    environment:
+      - BUGIT_LOG_LEVEL=info
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  bugit-data:
+    driver: local

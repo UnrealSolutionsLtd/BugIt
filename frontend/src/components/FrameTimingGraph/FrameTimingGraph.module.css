@@ -1,0 +1,50 @@
+.container {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.summary {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.stat {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stat strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.stat strong.bad {
+  color: var(--accent-error);
+}
+
+.canvasContainer {
+  height: 150px;
+}
+
+.canvas {
+  display: block;
+  cursor: crosshair;
+}

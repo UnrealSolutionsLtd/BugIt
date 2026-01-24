@@ -1,0 +1,28 @@
+# BugIt .gitignore
+
+# Binary
+bugit
+bugit-linux
+bugit.exe
+
+# Data directory (for local development)
+data/
+
+# Go
+*.test
+*.out
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+/tmp/
+*.zip
