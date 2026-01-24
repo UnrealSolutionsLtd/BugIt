@@ -1,6 +1,10 @@
-# BugIt - Forensic QA Dashboard
+# BugIt - QA Dashboard for Unreal Engine Games
 
-On-premises forensic QA dashboard for investigating immutable repro bundles produced by [Runtime Video Recorder (RVR)](https://unrealsolutions.ltd/products/runtime-video-recorder).
+**Reduce back-and-forth between QA testers and developers.** BugIt is an on-premises dashboard that turns bug reports into undeniable video evidence - complete with inputs, logs, and frame timings - so developers can reproduce issues on the first try.
+
+- **Built for Unreal Engine** - Native integration with UE5 games
+- **QA-first workflow** - Video evidence eliminates "works on my machine" disputes
+- **Powered by [RVR](https://unrealsolutions.ltd/products/runtime-video-recorder)** - In-engine capture creates forensic-grade repro bundles automatically
 
 ## Features
 
