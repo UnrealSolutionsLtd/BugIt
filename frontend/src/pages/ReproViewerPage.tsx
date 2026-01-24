@@ -77,9 +77,11 @@ export function ReproViewerPage() {
       <div className={styles.container}>
         {/* Header */}
         <header className={styles.header}>
-          <Link to="/" className={styles.backBtn}>
-            ← Back
+          <Link to="/" className={styles.logo}>
+            <span className={styles.logoIcon}>🐛</span>
+            <span className={styles.logoText}>BugIt</span>
           </Link>
+          <span className={styles.separator}>|</span>
           <h1 className={styles.title}>{repro.bundle_id}</h1>
           <button className={styles.exportBtn}>
             Export

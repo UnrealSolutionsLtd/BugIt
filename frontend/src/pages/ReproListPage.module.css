@@ -18,6 +18,17 @@
   font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.logoIcon {
+  font-size: 24px;
+}
+
+.logoText {
+  color: var(--accent-primary);
 }
 
 .headerActions {

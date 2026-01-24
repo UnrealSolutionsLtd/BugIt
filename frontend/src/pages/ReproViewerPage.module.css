@@ -29,6 +29,33 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logoIcon {
+  font-size: 20px;
+}
+
+.logoText {
+  color: var(--accent-primary);
+}
+
+.separator {
+  color: var(--border-color);
+  font-weight: 300;
+}
+
 .backBtn {
   padding: var(--spacing-sm) var(--spacing-md);
   background: transparent;

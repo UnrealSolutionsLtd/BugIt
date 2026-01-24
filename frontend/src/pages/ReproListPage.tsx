@@ -77,7 +77,10 @@ export function ReproListPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>BugIt</h1>
+        <h1 className={styles.title}>
+          <span className={styles.logoIcon}>🐛</span>
+          <span className={styles.logoText}>BugIt</span>
+        </h1>
         <div className={styles.headerActions}>
           <UploadBundleButton
             onSuccess={handleUploadSuccess}
