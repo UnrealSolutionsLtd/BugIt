@@ -1,0 +1,36 @@
+# BugIt Docker Compose
+# On-premises deployment for trusted QA networks
+
+version: "3.8"
+
+services:
+  bugit:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+    image: bugit:${VERSION:-latest}
+    container_name: bugit
+    ports:
+      - "${BUGIT_PORT:-8080}:8080"
+    volumes:
+      - bugit-data:/app/data
+    environment:
+      - BUGIT_LOG_LEVEL=${BUGIT_LOG_LEVEL:-info}
+      - BUGIT_MAX_UPLOAD_MB=${BUGIT_MAX_UPLOAD_MB:-500}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  bugit-data:
+    driver: local
+    # For production, consider mounting a specific host path:
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /var/lib/bugit

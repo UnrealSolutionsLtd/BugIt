@@ -1,0 +1,40 @@
+# Dependencies
+**/node_modules/
+**/.npm/
+
+# Build outputs
+**/dist/
+**/build/
+backend/bugit
+
+# IDE and editor files
+**/.idea/
+**/.vscode/
+**/*.swp
+**/*.swo
+**/*~
+
+# Git
+.git/
+.gitignore
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+
+# Development files
+**/server/
+**/*.test.ts
+**/*.test.go
+**/*_test.go
+**/coverage/
+**/.env*
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Temporary files
+**/tmp/
+**/*.log
