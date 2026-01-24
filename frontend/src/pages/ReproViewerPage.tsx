@@ -88,14 +88,86 @@ export function ReproViewerPage() {
 
         {/* Main content */}
         <div className={styles.content}>
-          {/* Left column: Video and timelines */}
-          <div className={styles.mainColumn}>
-            {videoUrl ? (
-              <VideoPlayer src={videoUrl} />
-            ) : (
-              <div className={styles.noVideo}>No video available</div>
-            )}
+          {/* Top row: Video + Metadata side by side */}
+          <div className={styles.topRow}>
+            <div className={styles.videoColumn}>
+              {videoUrl ? (
+                <VideoPlayer src={videoUrl} />
+              ) : (
+                <div className={styles.noVideo}>No video available</div>
+              )}
+            </div>
 
+            <div className={styles.metaColumn}>
+              <section className={styles.section}>
+                <h3 className={styles.sectionTitle}>Metadata</h3>
+                <dl className={styles.metaList}>
+                  <dt>Build</dt>
+                  <dd className={styles.monospace}>{repro.build_id}</dd>
+                  
+                  <dt>Platform</dt>
+                  <dd>{repro.platform}</dd>
+                  
+                  <dt>Map</dt>
+                  <dd className={styles.monospace}>{displayMap}</dd>
+                  
+                  <dt>Date</dt>
+                  <dd>{new Date(repro.created_at).toLocaleString()}</dd>
+                  
+                  <dt>Size</dt>
+                  <dd>{formatBytes(repro.size_bytes)}</dd>
+                </dl>
+              </section>
+
+              {repro.artifacts && repro.artifacts.length > 0 && (
+                <section className={styles.section}>
+                  <h3 className={styles.sectionTitle}>Artifacts</h3>
+                  <ul className={styles.artifactList}>
+                    {repro.artifacts.map(artifact => (
+                      <li key={artifact.artifact_id} className={styles.artifact}>
+                        <a 
+                          href={getArtifactUrl(repro.bundle_id, artifact.artifact_id)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {artifact.filename}
+                        </a>
+                        <span className={styles.artifactSize}>
+                          {formatBytes(artifact.size_bytes)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {tags.length > 0 && (
+                <section className={styles.section}>
+                  <h3 className={styles.sectionTitle}>Tags</h3>
+                  <div className={styles.tags}>
+                    {tags.map(tag => (
+                      <span key={tag} className={styles.tag}>{tag}</span>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {repro.qa_notes && repro.qa_notes.length > 0 && (
+                <section className={styles.section}>
+                  <h3 className={styles.sectionTitle}>QA Notes</h3>
+                  {repro.qa_notes.map(note => (
+                    <div key={note.note_id} className={styles.note}>
+                      <p className={styles.noteContent}>{note.content}</p>
+                      <span className={styles.noteAuthor}>— {note.author}</span>
+                    </div>
+                  ))}
+                </section>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom section: Timelines */}
+          <div className={styles.mainColumn}>
             {inputs && (
               <InputTimeline
                 keyboard={inputs.keyboard}
@@ -118,97 +190,6 @@ export function ReproViewerPage() {
               />
             )}
           </div>
-
-          {/* Right column: Metadata sidebar */}
-          <aside className={styles.sidebar}>
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Metadata</h3>
-              <dl className={styles.metaList}>
-                <dt>Build</dt>
-                <dd className={styles.monospace}>{repro.build_id}</dd>
-                
-                <dt>Platform</dt>
-                <dd>{repro.platform}</dd>
-                
-                <dt>Map</dt>
-                <dd className={styles.monospace}>{displayMap}</dd>
-                
-                <dt>Date</dt>
-                <dd>{new Date(repro.created_at).toLocaleString()}</dd>
-                
-                <dt>Size</dt>
-                <dd>{formatBytes(repro.size_bytes)}</dd>
-                
-                <dt>Artifacts</dt>
-                <dd>{repro.artifact_count} files</dd>
-              </dl>
-            </section>
-
-            {tags.length > 0 && (
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Tags</h3>
-                <div className={styles.tags}>
-                  {tags.map(tag => (
-                    <span key={tag} className={styles.tag}>{tag}</span>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Bundle</h3>
-              <dl className={styles.metaList}>
-                <dt>Schema</dt>
-                <dd className={styles.monospace}>{repro.schema_version}</dd>
-                
-                <dt>Hash</dt>
-                <dd className={`${styles.monospace} ${styles.hash}`}>
-                  {repro.content_hash.substring(0, 20)}...
-                </dd>
-
-                {repro.rvr_version && (
-                  <>
-                    <dt>RVR Version</dt>
-                    <dd className={styles.monospace}>{repro.rvr_version}</dd>
-                  </>
-                )}
-              </dl>
-            </section>
-
-            {repro.artifacts && repro.artifacts.length > 0 && (
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Artifacts</h3>
-                <ul className={styles.artifactList}>
-                  {repro.artifacts.map(artifact => (
-                    <li key={artifact.artifact_id} className={styles.artifact}>
-                      <a 
-                        href={getArtifactUrl(repro.bundle_id, artifact.artifact_id)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {artifact.filename}
-                      </a>
-                      <span className={styles.artifactSize}>
-                        {formatBytes(artifact.size_bytes)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {repro.qa_notes && repro.qa_notes.length > 0 && (
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>QA Notes</h3>
-                {repro.qa_notes.map(note => (
-                  <div key={note.note_id} className={styles.note}>
-                    <p className={styles.noteContent}>{note.content}</p>
-                    <span className={styles.noteAuthor}>— {note.author}</span>
-                  </div>
-                ))}
-              </section>
-            )}
-          </aside>
         </div>
 
         {/* Keyboard shortcuts help */}

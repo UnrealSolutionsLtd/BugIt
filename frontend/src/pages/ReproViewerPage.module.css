@@ -73,26 +73,43 @@
 
 .content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
   padding: var(--spacing-lg);
-  overflow: hidden;
+  overflow-y: auto;
 }
 
+/* Top row: Video + Metadata side by side */
+.topRow {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: flex-start;
+}
+
+.videoColumn {
+  flex: 0 0 auto;
+  max-width: 640px;
+}
+
+.metaColumn {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  align-content: start;
+}
+
+/* Bottom section: Timelines and logs */
 .mainColumn {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
   min-width: 0;
-  overflow-y: auto;
 }
 
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  overflow-y: auto;
+  display: none; /* Sidebar content moved to metaColumn */
 }
 
 .section {
@@ -235,12 +252,16 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .content {
-    grid-template-columns: 1fr;
+  .topRow {
+    flex-direction: column;
   }
   
-  .sidebar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  .videoColumn {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .metaColumn {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 }

@@ -6,6 +6,8 @@
 - **QA-first workflow** - Video evidence eliminates "works on my machine" disputes
 - **Powered by [RVR](https://unrealsolutions.com)** - In-engine capture creates repro bundles automatically. Works for any game
 
+![BugIt Dashboard](docs/images/screenshot.png)
+
 ## Features
 
 - **Video-first investigation** - Scrub through gameplay recordings with synced timelines
@@ -45,7 +47,7 @@ open http://localhost:8080
 ```bash
 # Terminal 1: Backend
 cd backend
-go run ./cmd/bugit serve --port 3001 --data-dir ./data
+go run ./cmd/bugit serve --port 8080 --data-dir ./data
 
 # Terminal 2: Frontend
 cd frontend
@@ -53,7 +55,7 @@ npm install
 npm run dev
 ```
 
-Frontend dev server proxies `/api/*` to backend on port 3001.
+Frontend dev server proxies `/api/*` to backend on port 8080.
 
 ## Deployment
 
