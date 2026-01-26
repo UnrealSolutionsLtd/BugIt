@@ -4,7 +4,7 @@
 
 - **Built for Unreal Engine** - Native integration with UE5 games
 - **QA-first workflow** - Video evidence eliminates "works on my machine" disputes
-- **Powered by [RVR](https://unrealsolutions.com)** - In-engine capture creates repro bundles automatically. Works for any game
+- **Powered by [RVR](https://unrealsolutions.com/?utm_source=github&utm_medium=readme&utm_campaign=bugit&utm_content=powered_by_rvr)** - In-engine capture creates repro bundles automatically. Works for any game
 
 ![BugIt Dashboard](docs/images/screenshot.png)
 
