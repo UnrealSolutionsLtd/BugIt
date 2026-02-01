@@ -65,7 +65,9 @@ export function InputTimeline({ keyboard, mouse, gamepad }: InputTimelineProps) 
                   width: `${Math.max(0.5, ((seg.endMs - seg.startMs) / durationMs) * 100)}%`,
                 }}
                 title={seg.keys.join(' + ')}
-              />
+              >
+                <span className={styles.segmentLabel}>{seg.keys.join('+')}</span>
+              </div>
             ))}
           </div>
         </div>

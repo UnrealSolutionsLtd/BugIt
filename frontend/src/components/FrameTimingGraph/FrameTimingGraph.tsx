@@ -172,15 +172,15 @@ export function FrameTimingGraph({ samples, summary }: FrameTimingGraphProps) {
       <div className={styles.header}>
         <span className={styles.title}>FRAME TIMING</span>
         <div className={styles.summary}>
-          <span className={styles.stat}>
+          <span className={styles.stat} title="Average frames per second across all samples">
             Avg: <strong>{summary.avgFps.toFixed(0)}</strong> FPS
           </span>
-          <span className={styles.stat}>
+          <span className={styles.stat} title="Lowest recorded frames per second">
             Min: <strong className={summary.minFps < 30 ? styles.bad : ''}>
               {summary.minFps.toFixed(0)}
             </strong> FPS
           </span>
-          <span className={styles.stat}>
+          <span className={styles.stat} title="Number of frames that dropped below 30 FPS">
             Stutters: <strong className={summary.stutterCount > 0 ? styles.bad : ''}>
               {summary.stutterCount}
             </strong>
