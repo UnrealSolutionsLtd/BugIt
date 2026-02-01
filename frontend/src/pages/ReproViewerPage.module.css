@@ -36,7 +36,7 @@
   text-decoration: none;
   color: var(--text-primary);
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .logo:hover {
@@ -44,7 +44,7 @@
 }
 
 .logoIcon {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .logoText {
