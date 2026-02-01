@@ -58,6 +58,7 @@ func (s *Server) Handler() http.Handler {
 	// Repro bundles
 	mux.HandleFunc("POST /api/repro-bundles", s.handleIngestBundle)
 	mux.HandleFunc("GET /api/repro-bundles", s.handleListBundles)
+	mux.HandleFunc("DELETE /api/repro-bundles", s.handlePurgeAll)
 	mux.HandleFunc("GET /api/repro-bundles/{bundle_id}", s.handleGetBundle)
 	mux.HandleFunc("GET /api/repro-bundles/{bundle_id}/artifacts/{artifact_id}", s.handleGetArtifact)
 	mux.HandleFunc("POST /api/repro-bundles/{bundle_id}/tags", s.handleAddTags)
@@ -199,6 +200,31 @@ func (s *Server) handleIngestBundle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.writeJSON(w, status, result)
+}
+
+// handlePurgeAll handles DELETE /api/repro-bundles
+func (s *Server) handlePurgeAll(w http.ResponseWriter, r *http.Request) {
+	// Delete from database first
+	count, err := s.db.PurgeAllBundles()
+	if err != nil {
+		s.writeError(w, http.StatusInternalServerError, &models.APIError{
+			Code:    models.ErrCodeDatabaseError,
+			Message: "failed to purge database: " + err.Error(),
+		})
+		return
+	}
+
+	// Then delete from storage
+	if err := s.storage.PurgeAllBundles(); err != nil {
+		s.logger.Error("failed to purge storage", "error", err)
+		// Continue anyway - database is already cleared
+	}
+
+	s.logger.Info("purged all bundles", "count", count)
+	s.writeJSON(w, http.StatusOK, map[string]interface{}{
+		"status":        "ok",
+		"bundles_purged": count,
+	})
 }
 
 // handleListBundles handles GET /api/repro-bundles

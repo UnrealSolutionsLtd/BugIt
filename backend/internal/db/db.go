@@ -371,6 +371,41 @@ func (db *DB) AddNote(bundleID string, note *models.QANote) error {
 	return err
 }
 
+// PurgeAllBundles deletes all bundles and related data from the database.
+func (db *DB) PurgeAllBundles() (int, error) {
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return 0, fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	// Count bundles before deletion
+	var count int
+	if err := tx.QueryRow("SELECT COUNT(*) FROM repro_bundles").Scan(&count); err != nil {
+		return 0, fmt.Errorf("count bundles: %w", err)
+	}
+
+	// Delete in order respecting foreign keys
+	if _, err := tx.Exec("DELETE FROM qa_notes"); err != nil {
+		return 0, fmt.Errorf("delete notes: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM tags"); err != nil {
+		return 0, fmt.Errorf("delete tags: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM artifacts"); err != nil {
+		return 0, fmt.Errorf("delete artifacts: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM repro_bundles"); err != nil {
+		return 0, fmt.Errorf("delete bundles: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, fmt.Errorf("commit: %w", err)
+	}
+
+	return count, nil
+}
+
 // ListBundles lists bundles with optional filtering.
 func (db *DB) ListBundles(query *models.BundleListQuery) (*models.BundleListResult, error) {
 	// Build WHERE clause

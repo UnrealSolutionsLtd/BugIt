@@ -53,6 +53,22 @@
   border-color: var(--accent-primary);
 }
 
+.purgeBtn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-error);
+  border-radius: var(--radius-sm);
+  color: var(--accent-error);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.purgeBtn:hover {
+  background: var(--accent-error);
+  color: white;
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;

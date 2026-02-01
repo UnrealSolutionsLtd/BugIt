@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getRepros, getFilters } from '../api';
+import { getRepros, getFilters, purgeAllBundles } from '../api';
 import { ReproCard, UploadBundleButton } from '../components';
 import type { ReproFilters, Platform } from '../types';
 import styles from './ReproListPage.module.css';
@@ -70,6 +70,19 @@ export function ReproListPage() {
     showToast('error', error.message || 'Failed to upload bundle');
   };
 
+  const handlePurge = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL bundles? This cannot be undone.')) {
+      return;
+    }
+    try {
+      const result = await purgeAllBundles();
+      showToast('success', `Purged ${result.bundles_purged} bundle(s)`);
+      refetch();
+    } catch (err) {
+      showToast('error', err instanceof Error ? err.message : 'Failed to purge database');
+    }
+  };
+
   const dismissToast = (id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
@@ -88,6 +101,9 @@ export function ReproListPage() {
           />
           <button className={styles.refreshBtn} onClick={() => refetch()}>
             Refresh
+          </button>
+          <button className={styles.purgeBtn} onClick={handlePurge}>
+            Purge DB
           </button>
         </div>
       </header>

@@ -95,6 +95,18 @@ func (s *Storage) ArtifactPath(bundleStoragePath, artifactPath string) string {
 	return filepath.Join(s.dataDir, bundleStoragePath, artifactPath)
 }
 
+// PurgeAllBundles removes all bundle directories from storage.
+func (s *Storage) PurgeAllBundles() error {
+	if err := os.RemoveAll(s.bundlesDir); err != nil {
+		return fmt.Errorf("remove bundles dir: %w", err)
+	}
+	// Recreate the empty directory
+	if err := os.MkdirAll(s.bundlesDir, 0755); err != nil {
+		return fmt.Errorf("recreate bundles dir: %w", err)
+	}
+	return nil
+}
+
 // CheckHealth verifies storage is accessible.
 func (s *Storage) CheckHealth() error {
 	// Check data directory is writable

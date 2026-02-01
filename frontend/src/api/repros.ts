@@ -102,6 +102,16 @@ export async function addTags(bundleId: string, tags: string[]): Promise<void> {
   await api.post(`/repro-bundles/${bundleId}/tags`, { tags });
 }
 
+// Purge all bundles from the database
+export interface PurgeResponse {
+  status: string;
+  bundles_purged: number;
+}
+
+export async function purgeAllBundles(): Promise<PurgeResponse> {
+  return api.delete<PurgeResponse>('/repro-bundles');
+}
+
 // Get artifact URL for a bundle
 export function getArtifactUrl(bundleId: string, artifactId: string): string {
   return `/api/repro-bundles/${bundleId}/artifacts/${artifactId}`;
