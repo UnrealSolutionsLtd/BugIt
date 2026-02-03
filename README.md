@@ -1,4 +1,4 @@
-# 🐛 BugIt - QA Dashboard for Unreal Engine Games
+# 🐛 [BugIt](https://youtu.be/MrrIpXYn-rs) - QA Dashboard for Unreal Engine Games
 
 **Reduce back-and-forth between QA testers and developers.** BugIt is an on-premises dashboard that turns bug reports into undeniable video evidence - complete with inputs, logs, and frame timings - so developers can reproduce issues on the first try.
 
