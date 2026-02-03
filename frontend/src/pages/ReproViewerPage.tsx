@@ -1,14 +1,32 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getRepro, getInputs, getLogs, getFrames, getArtifactUrl } from '../api';
-import { TimeProvider } from '../context/TimeContext';
+import { TimeProvider, useTime } from '../context/TimeContext';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { InputTimeline } from '../components/InputTimeline';
 import { FrameTimingGraph } from '../components/FrameTimingGraph';
 import { LogPanel } from '../components/LogPanel';
 import { formatBytes } from '../utils/time';
+import type { GetFramesResponse } from '../types';
 import styles from './ReproViewerPage.module.css';
+
+// Component to sync duration from frame data to TimeContext
+function DurationSync({ frames }: { frames: GetFramesResponse | undefined }) {
+  const { setDuration } = useTime();
+  
+  useEffect(() => {
+    if (frames?.samples && frames.samples.length > 0) {
+      // Use the last frame's timestamp as the duration
+      const lastSample = frames.samples[frames.samples.length - 1];
+      const durationFromData = lastSample.timestampMs;
+      console.log(`[BugIt] Setting duration from frame data: ${durationFromData}ms`);
+      setDuration(durationFromData);
+    }
+  }, [frames, setDuration]);
+  
+  return null;
+}
 
 export function ReproViewerPage() {
   const { id } = useParams<{ id: string }>();
@@ -74,6 +92,9 @@ export function ReproViewerPage() {
 
   return (
     <TimeProvider>
+      {/* Sync duration from frame data to TimeContext */}
+      <DurationSync frames={frames} />
+      
       <div className={styles.container}>
         {/* Header */}
         <header className={styles.header}>

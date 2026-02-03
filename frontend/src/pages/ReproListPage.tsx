@@ -167,13 +167,13 @@ export function ReproListPage() {
           </div>
         )}
 
-        {data && data.repros.length === 0 && (
+        {data && (!data.repros || data.repros.length === 0) && (
           <div className={styles.empty}>
             No repros found matching your filters.
           </div>
         )}
 
-        {data && data.repros.length > 0 && (
+        {data && data.repros && data.repros.length > 0 && (
           <>
             <div className={styles.reproList}>
               {data.repros.map(repro => (

@@ -38,6 +38,7 @@ export function TimeProvider({ children }: { children: ReactNode }) {
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const lastSyncTime = useRef<number>(0);
+  const lastUpdateTime = useRef<number>(0);
 
   const seek = useCallback((timeMs: number) => {
     setState(s => {
@@ -102,8 +103,14 @@ export function TimeProvider({ children }: { children: ReactNode }) {
       
       // Handle video time updates
       const handleTimeUpdate = () => {
-        // Debounce to avoid feedback loops
-        if (Date.now() - lastSyncTime.current < 100) return;
+        const now = Date.now();
+        
+        // Skip if we just programmatically seeked (avoid feedback loop)
+        if (now - lastSyncTime.current < 100) return;
+        
+        // Throttle to ~15fps max to reduce re-renders (every 66ms)
+        if (now - lastUpdateTime.current < 66) return;
+        lastUpdateTime.current = now;
         
         const newTimeMs = video.currentTime * 1000;
         setState(s => ({ ...s, currentTimeMs: newTimeMs }));
@@ -112,7 +119,14 @@ export function TimeProvider({ children }: { children: ReactNode }) {
       const handlePlay = () => setState(s => ({ ...s, isPlaying: true }));
       const handlePause = () => setState(s => ({ ...s, isPlaying: false }));
       const handleLoadedMetadata = () => {
-        setState(s => ({ ...s, durationMs: video.duration * 1000 }));
+        // Only set duration from video if not already set externally
+        setState(s => {
+          if (s.durationMs > 0) {
+            // Duration already set from data - don't override
+            return s;
+          }
+          return { ...s, durationMs: video.duration * 1000 };
+        });
       };
       
       video.addEventListener('timeupdate', handleTimeUpdate);

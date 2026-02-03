@@ -467,7 +467,7 @@ func (db *DB) ListBundles(query *models.BundleListQuery) (*models.BundleListResu
 	}
 	defer rows.Close()
 
-	var bundles []models.ReproBundle
+	bundles := make([]models.ReproBundle, 0)
 	for rows.Next() {
 		var b models.ReproBundle
 		var bundleTimestamp, createdAt string

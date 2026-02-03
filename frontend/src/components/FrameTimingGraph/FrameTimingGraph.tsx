@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useCallback } from 'react';
+import { useRef, useEffect, useMemo, useCallback, useState } from 'react';
 import { useTime } from '../../context/TimeContext';
 import type { FrameSample, FrameSummary } from '../../types';
 import styles from './FrameTimingGraph.module.css';
@@ -14,8 +14,10 @@ const PADDING = { top: 20, right: 50, bottom: 24, left: 10 };
 
 export function FrameTimingGraph({ samples, summary }: FrameTimingGraphProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const playheadCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { currentTimeMs, durationMs, seek } = useTime();
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
   // Downsample for performance if needed
   const displaySamples = useMemo(() => {
@@ -24,25 +26,38 @@ export function FrameTimingGraph({ samples, summary }: FrameTimingGraphProps) {
     return samples.filter((_, i) => i % step === 0);
   }, [samples]);
 
-  // Resize canvas to container
+  // Resize canvases to container
   useEffect(() => {
     const canvas = canvasRef.current;
+    const playheadCanvas = playheadCanvasRef.current;
     const container = containerRef.current;
-    if (!canvas || !container) return;
+    if (!canvas || !playheadCanvas || !container) return;
 
     const resizeObserver = new ResizeObserver(() => {
       const { width, height } = container.getBoundingClientRect();
-      canvas.width = width * window.devicePixelRatio;
-      canvas.height = height * window.devicePixelRatio;
+      const dpr = window.devicePixelRatio;
+      
+      // Main canvas
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
+      
+      // Playhead canvas (overlay)
+      playheadCanvas.width = width * dpr;
+      playheadCanvas.height = height * dpr;
+      playheadCanvas.style.width = `${width}px`;
+      playheadCanvas.style.height = `${height}px`;
+      
+      // Trigger graph redraw
+      setCanvasSize({ width, height });
     });
 
     resizeObserver.observe(container);
     return () => resizeObserver.disconnect();
   }, []);
 
-  // Draw graph
+  // Draw static graph (only when data changes, NOT on every time update)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -125,6 +140,37 @@ export function FrameTimingGraph({ samples, summary }: FrameTimingGraphProps) {
     
     ctx.stroke();
 
+    // Draw time axis
+    ctx.fillStyle = '#666';
+    ctx.font = '10px JetBrains Mono, monospace';
+    const tickCount = Math.min(10, Math.floor(durationMs / 5000) + 1);
+    for (let i = 0; i <= tickCount; i++) {
+      const t = (i / tickCount) * durationMs;
+      const x = PADDING.left + (t / durationMs) * graphWidth;
+      ctx.fillText(`${Math.round(t / 1000)}s`, x - 8, height - 6);
+    }
+
+  }, [displaySamples, durationMs, canvasSize]); // NOTE: currentTimeMs removed - graph is static!
+
+  // Draw playhead only (on separate canvas, updates every frame)
+  useEffect(() => {
+    const canvas = playheadCanvasRef.current;
+    if (!canvas || durationMs <= 0) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const dpr = window.devicePixelRatio;
+    const width = canvas.width / dpr;
+    const height = canvas.height / dpr;
+    
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    
+    const graphWidth = width - PADDING.left - PADDING.right;
+
+    // Clear playhead canvas
+    ctx.clearRect(0, 0, width, height);
+
     // Draw playhead
     const playheadX = PADDING.left + (currentTimeMs / durationMs) * graphWidth;
     ctx.strokeStyle = '#fff';
@@ -143,17 +189,7 @@ export function FrameTimingGraph({ samples, summary }: FrameTimingGraphProps) {
     ctx.closePath();
     ctx.fill();
 
-    // Draw time axis
-    ctx.fillStyle = '#666';
-    ctx.font = '10px JetBrains Mono, monospace';
-    const tickCount = Math.min(10, Math.floor(durationMs / 5000) + 1);
-    for (let i = 0; i <= tickCount; i++) {
-      const t = (i / tickCount) * durationMs;
-      const x = PADDING.left + (t / durationMs) * graphWidth;
-      ctx.fillText(`${Math.round(t / 1000)}s`, x - 8, height - 6);
-    }
-
-  }, [displaySamples, currentTimeMs, durationMs]);
+  }, [currentTimeMs, durationMs, canvasSize]);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -191,6 +227,10 @@ export function FrameTimingGraph({ samples, summary }: FrameTimingGraphProps) {
         <canvas
           ref={canvasRef}
           className={styles.canvas}
+        />
+        <canvas
+          ref={playheadCanvasRef}
+          className={styles.playheadCanvas}
           onClick={handleClick}
         />
       </div>

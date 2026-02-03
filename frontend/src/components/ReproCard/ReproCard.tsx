@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { formatRelativeTime, formatBytes } from '../../utils/time';
+import { formatBytes } from '../../utils/time';
 import type { ReproBundle } from '../../types';
 import styles from './ReproCard.module.css';
 
@@ -58,7 +58,7 @@ export function ReproCard({ repro }: ReproCardProps) {
         
         <div className={styles.footer}>
           <span className={styles.date}>
-            {formatRelativeTime(repro.created_at)}
+            {new Date(repro.created_at).toLocaleString()}
           </span>
         </div>
         

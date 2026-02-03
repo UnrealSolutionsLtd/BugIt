@@ -1,13 +1,20 @@
 import { useMemo } from 'react';
 import { useTime } from '../../context/TimeContext';
 import { getTickInterval } from '../../utils/time';
-import type { KeyboardEvent, MouseEvent, GamepadEvent, KeyboardSegment } from '../../types';
+import type { KeyboardEvent, MouseEvent, GamepadEvent } from '../../types';
 import styles from './InputTimeline.module.css';
 
 interface InputTimelineProps {
   keyboard: KeyboardEvent[];
   mouse: MouseEvent[];
   gamepad: GamepadEvent[];
+}
+
+// A keyboard segment represents a contiguous period where keys were held
+interface KeyboardSegment {
+  startMs: number;
+  endMs: number;
+  keys: string[];
 }
 
 export function InputTimeline({ keyboard, mouse, gamepad }: InputTimelineProps) {
@@ -56,19 +63,30 @@ export function InputTimeline({ keyboard, mouse, gamepad }: InputTimelineProps) 
         <div className={styles.track}>
           <span className={styles.label}>KBD</span>
           <div className={styles.trackContent}>
-            {keyboardSegments.map((seg, i) => (
-              <div
-                key={i}
-                className={styles.segment}
-                style={{
-                  left: `${(seg.startMs / durationMs) * 100}%`,
-                  width: `${Math.max(0.5, ((seg.endMs - seg.startMs) / durationMs) * 100)}%`,
-                }}
-                title={seg.keys.join(' + ')}
-              >
-                <span className={styles.segmentLabel}>{seg.keys.join('+')}</span>
-              </div>
-            ))}
+            {keyboardSegments.length === 0 ? (
+              <span className={styles.noData}>No keyboard input</span>
+            ) : (
+              keyboardSegments.map((seg, i) => {
+                // Handle segments that start before timeline (negative timestamps)
+                const clampedStart = Math.max(0, seg.startMs);
+                const clampedEnd = Math.min(durationMs, seg.endMs);
+                // Skip segments entirely before timeline
+                if (clampedEnd <= 0) return null;
+                const leftPercent = (clampedStart / durationMs) * 100;
+                const widthPercent = Math.max(0.5, ((clampedEnd - clampedStart) / durationMs) * 100);
+                return (
+                  <div
+                    key={i}
+                    className={styles.segment}
+                    style={{
+                      left: `${leftPercent}%`,
+                      width: `${widthPercent}%`,
+                    }}
+                    title={seg.keys.join(' + ')}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
         
@@ -143,6 +161,7 @@ function TimeRuler({ durationMs }: { durationMs: number }) {
   );
 }
 
+// Convert keyboard down/up events into visual segments
 function computeKeyboardSegments(
   events: KeyboardEvent[],
   durationMs: number
@@ -153,21 +172,68 @@ function computeKeyboardSegments(
   for (const event of events) {
     if (event.type === 'down' && !activeKeys.has(event.key)) {
       activeKeys.set(event.key, event.timestampMs);
-    } else if (event.type === 'up' && activeKeys.has(event.key)) {
-      const startMs = activeKeys.get(event.key)!;
-      segments.push({
-        startMs,
-        endMs: event.timestampMs,
-        keys: [event.key],
-      });
-      activeKeys.delete(event.key);
+    } else if (event.type === 'up') {
+      if (activeKeys.has(event.key)) {
+        // Normal case: KeyDown was seen, create segment
+        const startMs = activeKeys.get(event.key)!;
+        segments.push({
+          startMs,
+          endMs: event.timestampMs,
+          keys: [event.key],
+        });
+        activeKeys.delete(event.key);
+      } else {
+        // Orphaned KeyUp: key was held before capture started
+        // Treat as if KeyDown happened at time 0
+        segments.push({
+          startMs: 0,
+          endMs: event.timestampMs,
+          keys: [event.key],
+        });
+      }
     }
   }
   
-  // Close any still-active keys at end of recording
+  // Close any still-active keys at end of recording (orphaned KeyDown)
   for (const [key, startMs] of activeKeys) {
-    segments.push({ startMs, endMs: durationMs, keys: [key] });
+    segments.push({
+      startMs,
+      endMs: durationMs,
+      keys: [key],
+    });
   }
   
-  return segments;
+  // Sort by start time
+  segments.sort((a, b) => a.startMs - b.startMs);
+  
+  // Merge overlapping segments
+  return mergeOverlappingSegments(segments);
+}
+
+// Merge segments that overlap in time
+function mergeOverlappingSegments(segments: KeyboardSegment[]): KeyboardSegment[] {
+  if (segments.length === 0) return [];
+  
+  const merged: KeyboardSegment[] = [];
+  let current = { ...segments[0], keys: [...segments[0].keys] };
+  
+  for (let i = 1; i < segments.length; i++) {
+    const seg = segments[i];
+    
+    // Check if segments overlap
+    if (seg.startMs <= current.endMs) {
+      // Extend current segment and add keys
+      current.endMs = Math.max(current.endMs, seg.endMs);
+      if (!current.keys.includes(seg.keys[0])) {
+        current.keys.push(seg.keys[0]);
+      }
+    } else {
+      // No overlap, push current and start new
+      merged.push(current);
+      current = { ...seg, keys: [...seg.keys] };
+    }
+  }
+  
+  merged.push(current);
+  return merged;
 }

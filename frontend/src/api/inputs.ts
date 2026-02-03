@@ -1,4 +1,4 @@
-import type { GetInputsResponse } from '../types';
+import type { GetInputsResponse, KeyboardEvent, MouseEvent, GamepadEvent } from '../types';
 import { getBundle, getArtifactUrl } from './repros';
 
 // Get inputs for a bundle by fetching the inputs.json artifact
@@ -24,11 +24,15 @@ export async function getInputs(bundleId: string): Promise<GetInputsResponse> {
   
   const data = await response.json();
   
+  let keyboard: KeyboardEvent[] = [];
+  let mouse: MouseEvent[] = [];
+  let gamepad: GamepadEvent[] = [];
+  
   // Transform backend format to frontend format if needed
   if (data.events) {
     // Backend format with events array
-    const keyboard = data.events
-      .filter((e: { inputType: string }) => e.inputType.startsWith('Key'))
+    keyboard = data.events
+      .filter((e: { inputType: string }) => e.inputType === 'KeyDown' || e.inputType === 'KeyUp')
       .map((e: { timestampMs: number; inputType: string; keyName: string; keyCode: number }) => ({
         timestampMs: e.timestampMs,
         type: e.inputType === 'KeyDown' ? 'down' : 'up',
@@ -36,7 +40,7 @@ export async function getInputs(bundleId: string): Promise<GetInputsResponse> {
         keyCode: e.keyCode,
       }));
     
-    const mouse = data.events
+    mouse = data.events
       .filter((e: { inputType: string }) => e.inputType.startsWith('Mouse'))
       .map((e: { timestampMs: number; inputType: string; keyName?: string; screenPosition?: number[] }) => ({
         timestampMs: e.timestampMs,
@@ -46,7 +50,7 @@ export async function getInputs(bundleId: string): Promise<GetInputsResponse> {
         y: e.screenPosition?.[1] || 0,
       }));
     
-    const gamepad = data.events
+    gamepad = data.events
       .filter((e: { inputType: string }) => e.inputType.startsWith('Gamepad'))
       .map((e: { timestampMs: number; inputType: string; keyName: string; axisValue?: number }) => ({
         timestampMs: e.timestampMs,
@@ -54,10 +58,13 @@ export async function getInputs(bundleId: string): Promise<GetInputsResponse> {
         button: e.keyName,
         value: e.axisValue,
       }));
-    
-    return { keyboard, mouse, gamepad };
+  } else {
+    // Already in frontend format
+    keyboard = data.keyboard || [];
+    mouse = data.mouse || [];
+    gamepad = data.gamepad || [];
   }
   
-  // Already in frontend format
-  return data;
+  // Timestamps are pre-normalized by the Unreal plugin (relative to video start)
+  return { keyboard, mouse, gamepad };
 }

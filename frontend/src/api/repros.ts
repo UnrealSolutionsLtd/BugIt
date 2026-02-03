@@ -40,7 +40,7 @@ export async function getRepros(filters: ReproFilters = {}): Promise<GetReprosRe
   });
 
   return {
-    repros: response.bundles,
+    repros: response.bundles || [],
     total: response.total,
     page,
     pageSize: limit,

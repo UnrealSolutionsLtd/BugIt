@@ -70,6 +70,11 @@ func (s *Storage) MoveToBundles(srcDir, bundleID string) (string, error) {
 
 	destDir := filepath.Join(s.bundlesDir, dirName)
 
+	// Ensure bundles directory exists (may have been deleted)
+	if err := os.MkdirAll(s.bundlesDir, 0755); err != nil {
+		return "", fmt.Errorf("ensure bundles dir: %w", err)
+	}
+
 	// Check if destination already exists
 	if _, err := os.Stat(destDir); err == nil {
 		return "", fmt.Errorf("destination already exists: %s", destDir)
