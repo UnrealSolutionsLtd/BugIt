@@ -1,5 +1,7 @@
 # 🐛 [BugIt](https://youtu.be/MrrIpXYn-rs) - QA Dashboard for Unreal Engine Games
 
+Looking for integration support? Go [here](https://unrealsolutions.com/products/bugit/?utm_source=github&utm_medium=github)
+
 **Reduce back-and-forth between QA testers and developers.** BugIt is an on-premises dashboard that turns bug reports into undeniable video evidence - complete with inputs, logs, and frame timings - so developers can reproduce issues on the first try.
 
 - **Built for Unreal Engine** - Native integration with UE5 games
